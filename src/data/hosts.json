@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Oliver Thylmann",
+    "role": "Der Architekt",
+    "bio": "Gründer von Giant Swarm. Baut resilente Systeme und hinterfragt den Status Quo.",
+    "image": "oliver.png",
+    "social": {
+      "twitter": "https://twitter.com/othylmann",
+      "linkedin": "https://www.linkedin.com/in/othylmann"
+    }
+  },
+  {
+    "name": "Sebastian Deutsch",
+    "role": "Der Baumeister",
+    "bio": "Gründer von 9elements. Programmiert die Zukunft, einen Prompt nach dem anderen.",
+    "image": "sebastian.png",
+    "social": {
+      "twitter": "https://twitter.com/sippndipp",
+      "linkedin": "https://www.linkedin.com/in/sebastian-deutsch"
+    }
+  },
+  {
+    "name": "Manuel Koelman",
+    "role": "Der Growth Hacker",
+    "bio": "Gründer von PIRATE. Entfesselt Wachstum und digitale Strategien.",
+    "image": "manuel.png",
+    "social": {
+      "twitter": "https://twitter.com/manuelkoelman",
+      "linkedin": "https://www.linkedin.com/in/manuelkoelman"
+    }
+  },
+  {
+    "name": "Carlo Matic",
+    "role": "Der Erlebnis-Pionier",
+    "bio": "Gründer von Interactive Pioneers. Designt digitale Erlebnisse, die zählen.",
+    "image": "carlo.png",
+    "social": {
+      "twitter": "https://twitter.com/carlomatic",
+      "linkedin": "https://www.linkedin.com/in/carlomatic"
+    }
+  }
+]

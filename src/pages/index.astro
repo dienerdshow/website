@@ -1,0 +1,89 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TerminalHero from "../components/TerminalHero.astro";
+import HostCard from "../components/HostCard.astro";
+import hostsData from "../data/hosts.json";
+
+// Import images
+import oliverImg from "../assets/hosts/oliver.png";
+import sebastianImg from "../assets/hosts/sebastian.png";
+import manuelImg from "../assets/hosts/manuel.png";
+import carloImg from "../assets/hosts/carlo.png";
+
+const title = "Die Nerd Show - KI, Krypto, Chips & Globale Märkte";
+
+const imageMap: Record<string, ImageMetadata> = {
+	"oliver.png": oliverImg,
+	"sebastian.png": sebastianImg,
+	"manuel.png": manuelImg,
+	"carlo.png": carloImg,
+};
+
+// Fetch latest episode
+const RSS_URL = "https://interesse.podigee.io/feed/mp3";
+let latestEpisodeUrl = "";
+
+try {
+	const response = await fetch(RSS_URL);
+	const text = await response.text();
+	const match = text.match(/<enclosure url="([^"]+)"/);
+	if (match && match[1]) {
+		latestEpisodeUrl = match[1];
+	}
+} catch (e) {
+	console.error("Failed to fetch RSS feed", e);
+}
+---
+
+<Layout title={title}>
+	<main>
+		<TerminalHero latestEpisodeUrl={latestEpisodeUrl} />
+
+		<section id="hosts" class="py-20 bg-black relative">
+			<div class="container mx-auto px-4 relative z-10">
+				<h2
+					class="text-3xl md:text-5xl font-bold font-display text-white mb-16 text-center"
+				>
+					<span
+						class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-electric-blue)] to-[var(--color-neon-green)]"
+					>
+						<span class="text-[var(--color-neon-green)]">&gt;</span> AGENTEN_ENTDECKT
+					</span>
+				</h2>
+
+				<div
+					class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+				>
+					{
+						hostsData.map((host) => (
+							<HostCard
+								name={host.name}
+								role={host.role}
+								bio={host.bio}
+								image={imageMap[host.image]}
+								social={host.social}
+							/>
+						))
+					}
+				</div>
+			</div>
+
+			<!-- Background Grid for Hosts Section -->
+			<div
+				class="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"
+			>
+			</div>
+		</section>
+
+		<footer class="border-t border-gray-800 bg-[#050505] py-10">
+			<div class="container mx-auto px-4 text-center">
+				<p class="text-gray-500 font-mono text-sm">
+					© {new Date().getFullYear()} Die Nerd Show. <span
+						class="text-[var(--color-neon-green)]"
+						>AUSFÜHRUNG_ABGESCHLOSSEN</span
+					>
+				</p>
+			</div>
+		</footer>
+	</main>
+</Layout>
