@@ -18,26 +18,11 @@ const imageMap: Record<string, ImageMetadata> = {
 	"manuel.png": manuelImg,
 	"carlo.png": carloImg,
 };
-
-// Fetch latest episode
-const RSS_URL = "https://api.riverside.com/hosting/DNlgur7b.rss";
-let latestEpisodeUrl = "";
-
-try {
-	const response = await fetch(RSS_URL);
-	const text = await response.text();
-	const match = text.match(/<enclosure url="([^"]+)"/);
-	if (match && match[1]) {
-		latestEpisodeUrl = match[1];
-	}
-} catch (e) {
-	console.error("Failed to fetch RSS feed", e);
-}
 ---
 
 <Layout title={title}>
 	<main>
-		<TerminalHero latestEpisodeUrl={latestEpisodeUrl} />
+		<TerminalHero />
 
 		<section id="hosts" class="py-20 bg-black relative">
 			<div class="container mx-auto px-4 relative z-10">

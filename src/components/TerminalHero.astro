@@ -5,16 +5,12 @@ import {
     Wifi,
     Youtube,
     Podcast,
-    Play,
     X,
-    Apple,
 } from "lucide-react";
 
-interface Props {
-    latestEpisodeUrl?: string;
-}
-
-const { latestEpisodeUrl } = Astro.props;
+const SPOTIFY_SHOW_ID = "706ZREUUOjokFUISxpPmqI";
+const SPOTIFY_SHOW_URL = `https://open.spotify.com/show/${SPOTIFY_SHOW_ID}`;
+const SPOTIFY_EMBED_URL = `https://open.spotify.com/embed/show/${SPOTIFY_SHOW_ID}?utm_source=generator&theme=0`;
 ---
 
 <section
@@ -84,26 +80,6 @@ const { latestEpisodeUrl } = Astro.props;
 
             <!-- CTA Buttons -->
             <div class="flex flex-wrap gap-4 items-center">
-                <!-- Playback Button / Player -->
-                <div
-                    class="playback-container relative h-12 w-[240px]"
-                    data-url={latestEpisodeUrl}
-                >
-                    <button
-                        id="play-button"
-                        class="absolute inset-0 w-full h-full px-6 bg-[var(--color-electric-blue)] text-white font-mono rounded hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 z-10"
-                    >
-                        <Play className="w-4 h-4" />
-                        PLAYBACK_STARTEN()
-                    </button>
-                    <!-- Audio player masked to button shape/size -->
-                    <audio
-                        id="audio-player"
-                        class="hidden absolute inset-0 w-full h-full opacity-90 rounded bg-gray-900 object-cover"
-                        controls
-                        style="width: 100%; height: 100%;"></audio>
-                </div>
-
                 <!-- YouTube Button -->
                 <a
                     href="https://www.youtube.com/@DieNerdShow"
@@ -157,7 +133,7 @@ const { latestEpisodeUrl } = Astro.props;
                                 >
                             </a>
                             <a
-                                href="https://open.spotify.com/search/Die%20Nerd%20Show"
+                                href={SPOTIFY_SHOW_URL}
                                 target="_blank"
                                 class="flex items-center gap-3 p-3 bg-gray-900 rounded hover:bg-gray-800 border border-gray-800 hover:border-gray-600 transition-all group"
                             >
@@ -190,34 +166,25 @@ const { latestEpisodeUrl } = Astro.props;
                     AGENTEN_ANSEHEN
                 </a>
             </div>
+
+            <!-- Spotify Embed -->
+            <div class="mt-8 rounded-xl overflow-hidden border border-gray-800 bg-black/40">
+                <iframe
+                    title="Die Nerd Show auf Spotify"
+                    src={SPOTIFY_EMBED_URL}
+                    width="100%"
+                    height="232"
+                    frameborder="0"
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                    loading="lazy"
+                    class="block w-full"
+                ></iframe>
+            </div>
         </div>
     </div>
 </section>
 
 <script>
-    // Playback Logic
-    const playButton = document.getElementById("play-button");
-    const audioPlayer = document.getElementById(
-        "audio-player",
-    ) as HTMLAudioElement;
-    const container = document.querySelector(
-        ".playback-container",
-    ) as HTMLElement;
-
-    if (playButton && audioPlayer && container) {
-        playButton.addEventListener("click", () => {
-            const url = container.dataset.url;
-            if (url) {
-                audioPlayer.src = url;
-                audioPlayer.classList.remove("hidden");
-                playButton.classList.add("hidden");
-                audioPlayer.play();
-            } else {
-                alert("Keine Episode gefunden.");
-            }
-        });
-    }
-
     // Dropdown Logic
     const trigger = document.getElementById("subscribe-trigger");
     const menu = document.getElementById("subscribe-menu");
