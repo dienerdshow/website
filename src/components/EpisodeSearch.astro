@@ -1,0 +1,204 @@
+---
+import { Search, Play, ExternalLink } from "lucide-react";
+import episodes from "../data/episodes.json";
+
+const totalEpisodes = episodes.length;
+const SPOTIFY_SHOW_URL = "https://open.spotify.com/show/706ZREUUOjokFUISxpPmqI";
+---
+
+<section
+    id="search"
+    class="py-20 bg-[#050505] relative border-b border-gray-800"
+>
+    <div
+        class="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"
+    >
+    </div>
+
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto">
+            <h2
+                class="text-3xl md:text-5xl font-bold font-display text-white mb-4 text-center"
+            >
+                <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-electric-blue)] to-[var(--color-neon-green)]"
+                >
+                    <span class="text-[var(--color-neon-green)]">&gt;</span> EPISODEN_SUCHEN
+                </span>
+            </h2>
+            <p class="text-gray-400 font-mono text-sm text-center mb-10">
+                Frag was du hören willst — Stichwort, Thema, Firma.
+                <span class="text-gray-600">>> {totalEpisodes} Folgen indiziert.</span>
+            </p>
+
+            <div class="relative mb-8">
+                <div
+                    class="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-neon-green)] pointer-events-none"
+                >
+                    <Search className="w-5 h-5" />
+                </div>
+                <input
+                    id="search-input"
+                    type="search"
+                    autocomplete="off"
+                    placeholder="z.B. ki, ethereum, tsmc, chips, openai..."
+                    class="w-full h-14 pl-12 pr-4 bg-black/60 border border-gray-800 focus:border-[var(--color-neon-green)] outline-none rounded-lg text-white font-mono placeholder:text-gray-600 transition-colors"
+                />
+            </div>
+
+            <p
+                id="search-hint"
+                class="text-center text-gray-600 font-mono text-sm"
+            >
+                <span class="text-[var(--color-neon-green)]">>></span> Tippe um zu suchen.
+            </p>
+
+            <div id="search-results" class="space-y-4 hidden"></div>
+
+            <p
+                id="search-empty"
+                class="hidden text-center text-gray-500 font-mono text-sm py-8"
+            >
+                <span class="text-red-400">>></span> Keine Folge gefunden. Probier ein anderes Stichwort.
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    import Fuse from "fuse.js";
+    import episodes from "../data/episodes.json";
+
+    type Episode = (typeof episodes)[number];
+
+    const SPOTIFY_SHOW_URL =
+        "https://open.spotify.com/show/706ZREUUOjokFUISxpPmqI";
+
+    const fuse = new Fuse(episodes, {
+        keys: [
+            { name: "title", weight: 3 },
+            { name: "tags", weight: 2.5 },
+            { name: "summary", weight: 2 },
+            { name: "rawDescription", weight: 1 },
+        ],
+        threshold: 0.4,
+        ignoreLocation: true,
+        minMatchCharLength: 2,
+        includeScore: true,
+    });
+
+    const input = document.getElementById("search-input") as HTMLInputElement;
+    const results = document.getElementById("search-results") as HTMLElement;
+    const hint = document.getElementById("search-hint") as HTMLElement;
+    const empty = document.getElementById("search-empty") as HTMLElement;
+
+    function escapeHtml(s: string): string {
+        return s
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function formatDate(s: string): string {
+        const d = new Date(s);
+        if (Number.isNaN(d.getTime())) return "";
+        return d.toLocaleDateString("de-DE", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+    }
+
+    function spotifySearchUrl(title: string): string {
+        return `https://open.spotify.com/search/${encodeURIComponent(title)}/episodes`;
+    }
+
+    function renderResult(ep: Episode): string {
+        const date = formatDate(ep.pubDate);
+        const tags = (ep.tags ?? [])
+            .slice(0, 8)
+            .map(
+                (t) =>
+                    `<span class="text-xs font-mono px-2 py-0.5 rounded border border-gray-800 text-gray-400 bg-black/40">${escapeHtml(t)}</span>`,
+            )
+            .join(" ");
+        const summary =
+            (ep.summary && ep.summary.trim()) ||
+            ep.rawDescription ||
+            "";
+        return `
+<article class="border border-gray-800 hover:border-[var(--color-neon-green)]/40 transition-colors rounded-lg p-5 bg-black/40">
+    <header class="flex items-start justify-between gap-3 mb-2">
+        <h3 class="text-white font-display font-bold text-lg leading-snug">${escapeHtml(ep.title)}</h3>
+        <span class="text-xs font-mono text-gray-500 whitespace-nowrap mt-1">${escapeHtml(date)}</span>
+    </header>
+    ${summary ? `<p class="text-gray-300 text-sm leading-relaxed mb-3">${escapeHtml(summary)}</p>` : ""}
+    ${tags ? `<div class="flex flex-wrap gap-1.5 mb-4">${tags}</div>` : ""}
+    <div class="flex flex-wrap gap-2 items-center">
+        <button
+            data-audio-url="${escapeHtml(ep.audioUrl)}"
+            class="play-button h-9 px-4 bg-[var(--color-electric-blue)] hover:bg-blue-600 transition-colors text-white text-xs font-mono rounded flex items-center gap-1.5"
+        >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            ABSPIELEN
+        </button>
+        <a
+            href="${escapeHtml(spotifySearchUrl(ep.title))}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="h-9 px-4 border border-gray-700 hover:border-[var(--color-neon-green)] text-gray-300 hover:text-[var(--color-neon-green)] transition-colors text-xs font-mono rounded flex items-center gap-1.5"
+        >
+            AUF SPOTIFY
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>
+        </a>
+    </div>
+    <audio class="audio-slot hidden w-full mt-3" controls preload="none"></audio>
+</article>`;
+    }
+
+    function render(query: string): void {
+        const q = query.trim();
+        if (q.length < 2) {
+            hint.classList.remove("hidden");
+            results.classList.add("hidden");
+            empty.classList.add("hidden");
+            return;
+        }
+        hint.classList.add("hidden");
+        const hits = fuse.search(q, { limit: 8 });
+        if (hits.length === 0) {
+            results.classList.add("hidden");
+            empty.classList.remove("hidden");
+            return;
+        }
+        empty.classList.add("hidden");
+        results.classList.remove("hidden");
+        results.innerHTML = hits.map((h) => renderResult(h.item)).join("");
+    }
+
+    let debounceTimer: number | undefined;
+    input.addEventListener("input", () => {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(() => render(input.value), 120);
+    });
+
+    // Inline playback: swap button for native <audio> on click
+    results.addEventListener("click", (e) => {
+        const btn = (e.target as HTMLElement).closest(".play-button") as
+            | HTMLButtonElement
+            | null;
+        if (!btn) return;
+        const url = btn.dataset.audioUrl;
+        if (!url) return;
+        const audio = btn
+            .closest("article")
+            ?.querySelector(".audio-slot") as HTMLAudioElement | null;
+        if (!audio) return;
+        audio.src = url;
+        audio.classList.remove("hidden");
+        btn.classList.add("hidden");
+        audio.play().catch(() => {});
+    });
+</script>

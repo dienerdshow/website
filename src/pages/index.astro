@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import TerminalHero from "../components/TerminalHero.astro";
+import EpisodeSearch from "../components/EpisodeSearch.astro";
 import HostCard from "../components/HostCard.astro";
 import hostsData from "../data/hosts.json";
 
@@ -23,6 +24,8 @@ const imageMap: Record<string, ImageMetadata> = {
 <Layout title={title}>
 	<main>
 		<TerminalHero />
+
+		<EpisodeSearch />
 
 		<section id="hosts" class="py-20 bg-black relative">
 			<div class="container mx-auto px-4 relative z-10">
